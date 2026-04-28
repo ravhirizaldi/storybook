@@ -115,6 +115,8 @@ export function StoryProjectPage() {
     } else if (serverContentChanged && !isEditing) {
       setEditorValue(chapter.content);
       lastSyncedContentRef.current = chapter.content;
+    } else if (serverContentChanged) {
+      lastSyncedContentRef.current = chapter.content;
     }
   }, [selectedChapterId, chaptersQuery.data, isEditing]);
 
