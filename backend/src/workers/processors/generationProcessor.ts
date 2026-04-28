@@ -302,6 +302,15 @@ export async function processGenerationJob(job: Job<QueueJobPayload>) {
         reason: 'project.failed',
       });
     }
+
+    if (
+      payload.type === 'generate_chapter' ||
+      payload.type === 'regenerate_chapter' ||
+      payload.type === 'continue_chapter'
+    ) {
+      await queueNextPendingChapter(payload.projectId);
+    }
+
     throw error;
   }
 }
