@@ -35,6 +35,7 @@ export async function listProjectChapters(projectId: string) {
       sortOrder: chapters.sortOrder,
       wordCount: chapters.wordCount,
       charCount: chapters.charCount,
+      arcsJson: chapters.arcsJson,
       generationPromptSnapshot: chapters.generationPromptSnapshot,
       partTitle: parts.title,
       createdAt: chapters.createdAt,
