@@ -1,9 +1,10 @@
 import { and, desc, eq } from 'drizzle-orm';
 import { db } from '../../db/index.js';
-import { chapters, generationJobs } from '../../db/schema.js';
+import { chapters, generationJobs, projects } from '../../db/schema.js';
 import type { JobType } from '../../workers/queues.js';
 import { generationQueue } from '../../workers/queues.js';
 import { publishProjectRefresh } from '../realtime/pubsub.js';
+import { getNextPendingChapterId, hasActiveChapterJobs } from '../projects/service.js';
 
 type CreateJobInput = {
   projectId: string;
@@ -115,4 +116,32 @@ export async function getProjectJob(projectId: string, jobId: string) {
 export async function getJobById(jobId: string) {
   const row = await db.select().from(generationJobs).where(eq(generationJobs.id, jobId)).limit(1);
   return row[0] ?? null;
+}
+
+export async function queueNextPendingChapter(projectId: string): Promise<boolean> {
+  const active = await hasActiveChapterJobs(projectId);
+  if (active) return false;
+
+  const nextId = await getNextPendingChapterId(projectId);
+  if (!nextId) {
+    await db
+      .update(projects)
+      .set({ status: 'ready' })
+      .where(eq(projects.id, projectId));
+    await publishProjectRefresh({ projectId, reason: 'project.allChaptersDone' });
+    return false;
+  }
+
+  await db
+    .update(projects)
+    .set({ status: 'generating' })
+    .where(eq(projects.id, projectId));
+
+  await createAndQueueJob({
+    projectId,
+    chapterId: nextId,
+    type: 'generate_chapter',
+    input: {},
+  });
+  return true;
 }

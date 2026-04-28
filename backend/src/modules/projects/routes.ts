@@ -1,14 +1,16 @@
 import { z } from 'zod';
 import type { FastifyPluginAsync } from 'fastify';
-import { createAndQueueJob } from '../jobs/service.js';
+import { createAndQueueJob, queueNextPendingChapter } from '../jobs/service.js';
 import { publishProjectRefresh } from '../realtime/pubsub.js';
 import {
   createProject,
   deleteProject,
   getChapterIdsForProject,
+  getFailedChapterIds,
   getOwnedProject,
   getProjectDetail,
   listProjectsForUser,
+  setChaptersStatusByIds,
   updateProject,
 } from './service.js';
 
@@ -107,17 +109,12 @@ export const projectsRoutes: FastifyPluginAsync = async (fastify) => {
       const { projectId } = paramsProject.parse(request.params);
       await getOwnedProject(projectId, request.userAuth!.userId);
       const chapterIds = await getChapterIdsForProject(projectId);
-      const jobs = await Promise.all(
-        chapterIds.map((chapterId) =>
-          createAndQueueJob({
-            projectId,
-            chapterId,
-            type: 'generate_chapter',
-            input: {},
-          }),
-        ),
-      );
-      return { jobIds: jobs.map((job) => job.id), count: jobs.length };
+      const failedIds = await getFailedChapterIds(projectId);
+      if (failedIds.length) {
+        await setChaptersStatusByIds(failedIds, 'pending');
+      }
+      const queued = await queueNextPendingChapter(projectId);
+      return { queued, count: chapterIds.length };
     },
   );
 };
