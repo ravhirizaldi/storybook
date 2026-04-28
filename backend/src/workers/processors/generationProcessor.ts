@@ -23,10 +23,13 @@ import type { QueueJobPayload } from '../queues.js';
 
 async function applyOutline(payload: QueueJobPayload) {
   const targetChapterCount = Number(payload.input.targetChapterCount ?? 0);
+  console.log(`[worker] generating outline for project ${payload.projectId}...`);
   const outline = await generateOutline(
     payload.projectId,
     Number.isFinite(targetChapterCount) ? targetChapterCount : undefined,
   );
+  const totalChapters = outline.parts.reduce((sum, p) => sum + p.chapters.length, 0);
+  console.log(`[worker] outline ready: "${outline.title}" — ${outline.parts.length} parts, ${totalChapters} chapters, ${outline.characters.length} characters`);
 
   await db
     .update(projects)
@@ -111,6 +114,7 @@ async function applyOutline(payload: QueueJobPayload) {
     metadataJson: outline.storyBible as Record<string, unknown>,
   });
 
+  console.log(`[worker] outline saved for project ${payload.projectId}`);
   return outline;
 }
 
@@ -139,15 +143,18 @@ async function applyChapterGeneration(
     chapterId: chapter.id,
   });
 
+  console.log(`[worker] ${mode} chapter ${chapter.sortOrder}: "${chapter.title}"...`);
   const result = await generateChapter(payload.projectId, chapter.id);
   const content =
     mode === 'continue' && chapter.content
       ? `${chapter.content.trim()}\n\n${result.text.trim()}`
       : result.text.trim();
+  console.log(`[worker] chapter ${chapter.sortOrder} text generated (${countWords(content)} words), extracting metadata...`);
 
   const summary = await summarizeChapterForMemory(content);
   const characterExtraction = await extractCharactersFromChapter(content);
   const memoryExtraction = await extractMemoriesFromChapter(content);
+  console.log(`[worker] chapter ${chapter.sortOrder} metadata extracted (${characterExtraction.characters.length} characters, ${memoryExtraction.memories.length} memories)`);
 
   await db
     .update(chapters)
@@ -240,6 +247,7 @@ async function summarizeExistingChapter(payload: QueueJobPayload) {
 
 export async function processGenerationJob(job: Job<QueueJobPayload>) {
   const payload = job.data;
+  console.log(`[worker] processing job ${payload.jobId} (${payload.type})`);
   await setJobRunning(payload.jobId, payload.projectId, payload.chapterId);
 
   try {
@@ -263,6 +271,7 @@ export async function processGenerationJob(job: Job<QueueJobPayload>) {
     }
 
     await setJobCompleted(payload.jobId, payload.projectId, payload.chapterId, output);
+    console.log(`[worker] job ${payload.jobId} (${payload.type}) completed`);
 
     if (
       payload.type === 'generate_outline' ||
@@ -276,6 +285,7 @@ export async function processGenerationJob(job: Job<QueueJobPayload>) {
     return output;
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Unknown worker error';
+    console.error(`[worker] job ${payload.jobId} (${payload.type}) failed: ${message}`);
     await setJobFailed(payload.jobId, payload.projectId, payload.chapterId, message);
     if (payload.chapterId) {
       await db
