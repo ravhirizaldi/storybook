@@ -85,6 +85,7 @@ async function applyOutline(payload: QueueJobPayload) {
         summary: chapter.purpose,
         status: 'pending',
         sortOrder: chapterSort,
+        arcsJson: chapter.arcs ?? [],
       });
       chapterSort += 1;
     }

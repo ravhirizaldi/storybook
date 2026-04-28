@@ -60,6 +60,7 @@ export type Chapter = {
   sortOrder: number;
   wordCount: number;
   charCount: number;
+  arcsJson: { title: string; description: string }[];
   generationPromptSnapshot: string;
   createdAt: string;
   updatedAt: string;

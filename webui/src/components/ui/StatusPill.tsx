@@ -1,3 +1,4 @@
+import { Loader2 } from 'lucide-react';
 import { cn } from '../../lib/utils/cn';
 
 type Props = {
@@ -23,14 +24,19 @@ const statusClasses: Record<Props['status'], string> = {
   ready: 'border-emerald-400/30 text-emerald-300',
 };
 
+const spinningStatuses = new Set(['outlining', 'generating', 'queued']);
+
 export function StatusPill({ status }: Props) {
   return (
     <span
       className={cn(
-        'inline-flex rounded border px-2 py-0.5 text-[11px] font-medium uppercase tracking-wide',
+        'inline-flex items-center gap-1 rounded border px-2 py-0.5 text-[11px] font-medium uppercase tracking-wide',
         statusClasses[status],
       )}
     >
+      {spinningStatuses.has(status) && (
+        <Loader2 size={10} className="animate-spin" />
+      )}
       {status}
     </span>
   );

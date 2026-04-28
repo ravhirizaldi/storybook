@@ -10,6 +10,7 @@ PLANNING RULES (CRITICAL):
 - Each chapter must have a distinct purpose. Avoid consecutive chapters with the same emotional beat or scene structure.
 - The storyBible.coreRules must capture the master prompt's strict rules (pacing, phase isolation, information boundaries, character introduction timing, forbidden early mentions).
 - Include key restrictions from the master prompt in the storyBible so they persist into chapter generation.
+- Each chapter MUST have at least 3 arcs. Arcs are narrative sub-sections within a chapter (e.g. a scene shift, emotional turn, or new development). Each arc has a short evocative title and a one-sentence description.
 
 OUTPUT FORMAT:
 Output strict JSON only with this shape:
@@ -34,7 +35,8 @@ Output strict JSON only with this shape:
           "title": string,
           "purpose": string,
           "expectedTone": string,
-          "keyEvents": string[]
+          "keyEvents": string[],
+          "arcs": [{ "title": string, "description": string }]  // minimum 3 arcs per chapter
         }
       ]
     }
