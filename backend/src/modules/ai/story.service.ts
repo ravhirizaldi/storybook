@@ -152,6 +152,12 @@ export async function generateChapter(
 
   const buckets: ContextBucket[] = [
     {
+      label: 'Master Prompt',
+      mandatory: true,
+      weight: 120,
+      text: project.masterPrompt,
+    },
+    {
       label: 'System Writing Rules',
       mandatory: true,
       weight: 100,
