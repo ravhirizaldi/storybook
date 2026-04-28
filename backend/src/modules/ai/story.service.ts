@@ -100,7 +100,7 @@ export async function generateChapter(
     .orderBy(asc(storyBibles.createdAt))
     .limit(1);
 
-  const prevSummaries = await db
+  const allPrevSummaries = await db
     .select({
       id: chapters.id,
       title: chapters.title,
@@ -111,6 +111,14 @@ export async function generateChapter(
     .where(and(eq(chapters.projectId, projectId), lt(chapters.sortOrder, chapter.sortOrder)))
     .orderBy(desc(chapters.sortOrder))
     .limit(16);
+
+  const totalChapterCount = await db
+    .select({ id: chapters.id })
+    .from(chapters)
+    .where(eq(chapters.projectId, projectId));
+
+  const recentSummaries = allPrevSummaries.slice(0, 5);
+  const olderSummaries = allPrevSummaries.slice(5);
 
   const activeCharacters = await db
     .select()
@@ -188,6 +196,22 @@ export async function generateChapter(
       text: stringifyForContext(part ?? {}),
     },
     {
+      label: 'Story Position',
+      mandatory: true,
+      weight: 115,
+      text: `You are writing chapter ${chapter.sortOrder} of ${totalChapterCount.length} total chapters. ${
+        chapter.sortOrder === totalChapterCount.length
+          ? 'THIS IS THE FINAL CHAPTER. Follow the master prompt ending sequence precisely.'
+          : chapter.sortOrder >= totalChapterCount.length - 1
+            ? 'This is near the end of the story. Begin wrapping up toward the master prompt ending.'
+            : ''
+      } ${
+        allPrevSummaries.length > 0
+          ? `The previous chapter was "${allPrevSummaries[0].title}". Continue from where it ended. Do NOT restart the story.`
+          : 'This is the first chapter.'
+      }`,
+    },
+    {
       label: 'Current Chapter Instruction',
       mandatory: true,
       weight: 110,
@@ -200,11 +224,22 @@ export async function generateChapter(
       text: stringifyForContext(activeCharacters),
     },
     {
-      label: 'Previous Chapter Summaries',
+      label: 'Recent Chapter Summaries (MANDATORY — DO NOT IGNORE)',
+      mandatory: true,
+      weight: 105,
+      text:
+        recentSummaries.length > 0
+          ? stringifyForContext(
+              recentSummaries.map((item) => ({ title: item.title, summary: item.summary })),
+            )
+          : 'No previous chapters yet. This is the beginning of the story.',
+    },
+    {
+      label: 'Older Chapter Summaries',
       mandatory: false,
       weight: 60,
       text: stringifyForContext(
-        prevSummaries.map((item) => ({ title: item.title, summary: item.summary })),
+        olderSummaries.map((item) => ({ title: item.title, summary: item.summary })),
       ),
     },
     {
@@ -219,12 +254,6 @@ export async function generateChapter(
           importance: memory.importance,
         })),
       ),
-    },
-    {
-      label: 'Continuity Constraints',
-      mandatory: false,
-      weight: 70,
-      text: 'No continuity breaks. Preserve unresolved conflicts. Match chronology and character states.',
     },
   ];
 

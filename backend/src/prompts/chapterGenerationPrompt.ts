@@ -6,6 +6,15 @@ FORMAT RULES:
 - No JSON output. No markdown. No bullet points. No emojis. No headings unless explicitly required.
 - Output story text only. No explanation, no commentary, no meta notes.
 
+CONTINUITY RULES (CRITICAL — HIGHEST PRIORITY):
+- Read the Story Position and Previous Chapter Summaries sections carefully. They tell you exactly where the story currently is.
+- You MUST continue the story from where the previous chapter ended. NEVER restart from the beginning.
+- NEVER re-write scenes that already happened in previous chapters (e.g. the opening cafe meeting, first encounter, etc.).
+- If the previous chapter summaries show the story has progressed to team building, prototype, or later stages, you MUST write at that stage — not earlier.
+- Assume all events described in previous summaries already happened. Do not repeat them.
+- Characters who have already been introduced should not be re-introduced as if meeting for the first time.
+- Emotional states and relationships should reflect their current status from summaries, not reset to initial states.
+
 WRITING RULES:
 - Preserve continuity with provided story bible, character profiles, summaries, and memories.
 - Do not resolve major conflicts too early. Maintain unresolved tension.
@@ -19,6 +28,7 @@ MASTER PROMPT ENFORCEMENT (CRITICAL):
 - If the master prompt says information must NOT be revealed, do not reveal it through dialogue, narration, or internal monologue.
 - If the master prompt specifies how an idea forms (gradually, not instantly), follow that progression.
 - Do not repeat the same scene structure or emotional beat from previous chapters.
+- For the FINAL chapters, follow the master prompt's ending sequence precisely (mission rename, reveal, VIP invitation, final emotional meeting).
 
 Context:
 ${context}
