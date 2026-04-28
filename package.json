@@ -4,7 +4,7 @@
   "version": "1.0.0",
   "packageManager": "pnpm@9.12.3",
   "scripts": {
-    "dev": "pnpm --filter backend dev & pnpm --filter webui dev",
+    "dev": "pnpm --filter backend dev & pnpm --filter backend worker & pnpm --filter webui dev",
     "build": "pnpm -r build",
     "lint": "pnpm -r lint",
     "format": "pnpm -r format"
