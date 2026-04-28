@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useNavigate, useParams } from 'react-router-dom';
 import { PanelRightClose, PanelRightOpen } from 'lucide-react';
@@ -98,10 +98,15 @@ export function StoryProjectPage() {
     }
   }, [chaptersQuery.data, selectedChapterId]);
 
+  const prevChapterIdRef = useRef<string | null>(null);
   useEffect(() => {
-    if (selectedChapter) setEditorValue(selectedChapter.content);
-    setIsEditing(false);
-  }, [selectedChapter]);
+    if (selectedChapterId && selectedChapterId !== prevChapterIdRef.current) {
+      const chapter = chaptersQuery.data?.find((c) => c.id === selectedChapterId);
+      if (chapter) setEditorValue(chapter.content);
+      setIsEditing(false);
+      prevChapterIdRef.current = selectedChapterId;
+    }
+  }, [selectedChapterId, chaptersQuery.data]);
 
   const saveMutation = useMutation({
     mutationFn: async () => {
