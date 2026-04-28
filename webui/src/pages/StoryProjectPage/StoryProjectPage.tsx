@@ -20,6 +20,7 @@ export function StoryProjectPage() {
   const [selectedChapterId, setSelectedChapterId] = useState<string | null>(null);
   const [editorValue, setEditorValue] = useState('');
   const [treeOpen, setTreeOpen] = useState(true);
+  const [isEditing, setIsEditing] = useState(false);
   const [actionNotice, setActionNotice] = useState<{
     type: 'idle' | 'info' | 'success' | 'error';
     message: string;
@@ -99,6 +100,7 @@ export function StoryProjectPage() {
 
   useEffect(() => {
     if (selectedChapter) setEditorValue(selectedChapter.content);
+    setIsEditing(false);
   }, [selectedChapter]);
 
   const saveMutation = useMutation({
@@ -116,12 +118,10 @@ export function StoryProjectPage() {
   });
 
   const actionMutation = useMutation({
-    mutationFn: async (action: 'generate' | 'regenerate' | 'continue' | 'summarize') => {
+    mutationFn: async (action: 'generate' | 'regenerate') => {
       if (!selectedChapterId) throw new Error('Select chapter first.');
       if (action === 'generate') return apiClient.generateChapter(selectedChapterId);
-      if (action === 'regenerate') return apiClient.regenerateChapter(selectedChapterId);
-      if (action === 'continue') return apiClient.continueChapter(selectedChapterId);
-      return apiClient.summarizeChapter(selectedChapterId);
+      return apiClient.regenerateChapter(selectedChapterId);
     },
     onMutate: (action) => {
       setActionNotice({
@@ -268,10 +268,10 @@ export function StoryProjectPage() {
               onSave={() => saveMutation.mutate()}
               onGenerate={() => actionMutation.mutate('generate')}
               onRegenerate={() => actionMutation.mutate('regenerate')}
-              onContinue={() => actionMutation.mutate('continue')}
-              onSummarize={() => actionMutation.mutate('summarize')}
               saving={saveMutation.isPending}
               actionPending={actionMutation.isPending}
+              isEditing={isEditing}
+              onToggleEdit={() => setIsEditing((prev) => !prev)}
             />
           </div>
 
