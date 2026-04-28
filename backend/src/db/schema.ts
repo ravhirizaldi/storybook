@@ -130,6 +130,7 @@ export const chapters = pgTable('chapters', {
   sortOrder: integer('sort_order').notNull().default(0),
   wordCount: integer('word_count').notNull().default(0),
   charCount: integer('char_count').notNull().default(0),
+  arcsJson: jsonb('arcs_json').notNull().default([]),
   generationPromptSnapshot: text('generation_prompt_snapshot').notNull().default(''),
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp('updated_at', { withTimezone: true })

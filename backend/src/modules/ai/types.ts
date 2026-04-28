@@ -22,6 +22,12 @@ export const outlineSchema = z.object({
           purpose: z.string(),
           expectedTone: z.string(),
           keyEvents: z.array(z.string()),
+          arcs: z.array(
+            z.object({
+              title: z.string(),
+              description: z.string(),
+            }),
+          ),
         }),
       ),
     }),
