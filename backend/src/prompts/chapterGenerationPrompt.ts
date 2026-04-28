@@ -28,7 +28,7 @@ MASTER PROMPT ENFORCEMENT (CRITICAL):
 - If the master prompt says information must NOT be revealed, do not reveal it through dialogue, narration, or internal monologue.
 - If the master prompt specifies how an idea forms (gradually, not instantly), follow that progression.
 - Do not repeat the same scene structure or emotional beat from previous chapters.
-- For the FINAL chapters, follow the master prompt's ending sequence precisely (mission rename, reveal, VIP invitation, final emotional meeting).
+- For the FINAL chapters, follow the master prompt's ending sequence precisely.
 
 Context:
 ${context}
