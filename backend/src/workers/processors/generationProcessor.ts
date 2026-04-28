@@ -11,7 +11,12 @@ import {
 } from '../../modules/ai/story.service.js';
 import { upsertCharacterFromModel } from '../../modules/characters/service.js';
 import { createMemory, resolveCharacterIdByName } from '../../modules/memories/service.js';
-import { setJobCompleted, setJobFailed, setJobRunning } from '../../modules/jobs/service.js';
+import {
+  setJobCompleted,
+  setJobFailed,
+  setJobRunning,
+  queueNextPendingChapter,
+} from '../../modules/jobs/service.js';
 import { publishProjectRefresh } from '../../modules/realtime/pubsub.js';
 import { countChars, countWords } from '../../utils/text.js';
 import type { QueueJobPayload } from '../queues.js';
@@ -258,6 +263,16 @@ export async function processGenerationJob(job: Job<QueueJobPayload>) {
     }
 
     await setJobCompleted(payload.jobId, payload.projectId, payload.chapterId, output);
+
+    if (
+      payload.type === 'generate_outline' ||
+      payload.type === 'generate_chapter' ||
+      payload.type === 'regenerate_chapter' ||
+      payload.type === 'continue_chapter'
+    ) {
+      await queueNextPendingChapter(payload.projectId);
+    }
+
     return output;
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Unknown worker error';

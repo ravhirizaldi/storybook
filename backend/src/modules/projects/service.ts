@@ -116,7 +116,41 @@ export async function getChapterIdsForProject(projectId: string) {
   const rows = await db
     .select({ id: chapters.id })
     .from(chapters)
-    .where(eq(chapters.projectId, projectId));
+    .where(eq(chapters.projectId, projectId))
+    .orderBy(asc(chapters.sortOrder));
+  return rows.map((row) => row.id);
+}
+
+export async function getNextPendingChapterId(projectId: string): Promise<string | null> {
+  const [row] = await db
+    .select({ id: chapters.id })
+    .from(chapters)
+    .where(and(eq(chapters.projectId, projectId), eq(chapters.status, 'pending')))
+    .orderBy(asc(chapters.sortOrder))
+    .limit(1);
+  return row?.id ?? null;
+}
+
+export async function hasActiveChapterJobs(projectId: string): Promise<boolean> {
+  const rows = await db
+    .select({ id: chapters.id })
+    .from(chapters)
+    .where(
+      and(
+        eq(chapters.projectId, projectId),
+        inArray(chapters.status, ['queued', 'generating']),
+      ),
+    )
+    .limit(1);
+  return rows.length > 0;
+}
+
+export async function getFailedChapterIds(projectId: string): Promise<string[]> {
+  const rows = await db
+    .select({ id: chapters.id })
+    .from(chapters)
+    .where(and(eq(chapters.projectId, projectId), eq(chapters.status, 'failed')))
+    .orderBy(asc(chapters.sortOrder));
   return rows.map((row) => row.id);
 }
 
