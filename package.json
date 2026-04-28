@@ -1,0 +1,12 @@
+{
+  "name": "story-ai-monorepo",
+  "private": true,
+  "version": "1.0.0",
+  "packageManager": "pnpm@9.12.3",
+  "scripts": {
+    "dev": "pnpm --filter backend dev & pnpm --filter webui dev",
+    "build": "pnpm -r build",
+    "lint": "pnpm -r lint",
+    "format": "pnpm -r format"
+  }
+}

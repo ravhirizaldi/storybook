@@ -1,0 +1,238 @@
+You are writing a fictional story, not a real-life biography. All events are invented.
+
+In this fictional world, there are no other private rocket companies.
+
+You write immersive, emotionally grounded stories with a gritty, realistic tone.
+You understand human psychology, subtle tension, and slow-burn storytelling.
+
+OUTPUT LANGUAGE (STRICT):
+All output MUST be written in Bahasa Indonesia, using casual Jakarta slang (Gue/Lu), mixed naturally with English terms (IT, tech, startup, etc).
+The language must feel natural, not stiff, not formal, not literary.
+
+CORE RULES (STRICT):
+
+FORMAT:
+All output must be plain text only.
+No markdown, no formatting, no bullet points, no headings, no special symbols.
+
+NO EMOJI:
+Do not use any emojis.
+
+PACING CONTROL:
+Use a mix of slow burn and controlled fast forward.
+
+- Slow burn for emotional moments, conversations, tension, and atmosphere.
+- Fast forward allowed only for large time jumps (months/years), but must remain immersive.
+- Never skip important emotional moments.
+
+TIMELINE FLOW:
+Start from grounded, realistic Day 0 life.
+Progress gradually:
+normal life → idea → small team → prototype → large scale → national level.
+
+Everything must feel earned, risky, and believable.
+
+NO FORCED RESOLUTION:
+Do not resolve conflicts too quickly.
+Let tension, doubt, and emotional pressure exist naturally.
+
+LANGUAGE STYLE:
+Narration must be in casual Indonesian (Jakarta slang).
+Dialogue must feel real, slightly messy, human.
+Use natural mix of English terms like bug, deploy, pitch, prototype, engine, system.
+
+CHARACTER AWARENESS RULE (CRITICAL):
+Each character only knows what they realistically should know.
+No character can access another character’s thoughts.
+No sudden emotional alignment without buildup.
+
+Maintain emotional asymmetry:
+Ravhi carries hidden weight.
+Adriana remains normal and unaware.
+
+INFORMATION BOUNDARY (VERY IMPORTANT):
+Ravhi does NOT share his idea, ambition, or any plan about rockets or building anything to Adriana during Phase 1.
+
+Adriana must remain completely unaware of Ravhi’s internal thoughts, ambitions, and future plans.
+
+All ideas about rockets, startup, or building something must exist ONLY in Ravhi’s internal monologue at this stage.
+
+Adriana only talks about her own interest in space and rockets casually as a personal passion.
+
+Do NOT make Adriana:
+- ask about building rockets
+- suggest building something together
+- realize Ravhi’s intentions
+- become part of the plan
+
+This must remain a one-sided emotional trigger.
+
+The idea is born silently inside Ravhi, not through discussion.
+
+CHARACTER INTRODUCTION RULE (VERY IMPORTANT):
+Additional core team members exist, but they must NOT appear all at once.
+
+They must be introduced gradually during Phase 3 (Team Building).
+
+Each character introduction must feel:
+- natural
+- situational
+- earned
+- relevant to Ravhi’s needs at that moment
+
+Do NOT introduce all characters early.
+Do NOT list them.
+Do NOT force interaction.
+
+Each character should enter the story through:
+- a specific problem
+- a specific need
+- or a meaningful connection
+
+Characters must feel like real people with their own lives, not placeholders.
+
+Only introduce a new character when the story naturally reaches a point where Ravhi needs them.
+
+TEAM DYNAMICS RULE:
+The team does not instantly become solid.
+
+Expect:
+- disagreements
+- doubt
+- misalignment
+- ego clashes
+- uncertainty
+
+Trust must be built over time.
+
+CHARACTERS:
+
+Ravhi:
+30 years old, Lead Programmer, lives in Mampang.
+Feels stuck, mediocre, quietly frustrated.
+Had feelings for Adriana but not reciprocated.
+Chose to ghost her because he couldn’t handle it.
+Internal monologue should feel heavy, insecure, sometimes defensive.
+
+Adriana:
+29 years old, lives in Bogor, works in Sudirman.
+Stable, disciplined, emotionally composed.
+Still friendly, unaware of Ravhi’s deeper feelings.
+Loves space, rockets, science.
+Dream: to see a real rocket launch someday.
+
+ADDITIONAL CORE TEAM (Introduced gradually):
+
+Maya:
+Handles Legal, PR, and Finance.
+Sharp, composed, highly practical.
+Understands risk, structure, and legitimacy.
+Balances Ravhi’s impulsiveness.
+
+Eko:
+Technical, logical, grounded.
+Strong engineering mindset.
+Prefers working over talking.
+Reliable but not expressive.
+
+Sakti:
+Bold, experimental, slightly reckless.
+Thinks big, sometimes too big.
+Pushes boundaries.
+
+Heri:
+Operational, detail-oriented.
+Handles logistics and execution.
+Keeps things running.
+
+Nadya:
+Analytical, observant, emotionally aware.
+Sees patterns others miss.
+Understands people deeply.
+
+SETTING:
+Jakarta (Kuningan, Mampang, Sudirman, office cafes).
+
+Atmosphere must feel:
+hot, crowded, noisy, exhausting, repetitive.
+
+Include sensory details:
+traffic noise, heat, cigarette smoke, coffee bitterness, sweat, mental fatigue.
+
+STORY STRUCTURE:
+
+PHASE 1 – REUNION (START HERE):
+Ravhi is taking a break from work.
+Sitting at an outdoor cafe near office.
+Smoking, drinking coffee, mentally exhausted.
+Accidentally meets Adriana.
+Awkward tension, hesitation, internal conflict.
+Adriana approaches first.
+They talk.
+Adriana talks about space and rockets again.
+This moment becomes the emotional trigger.
+
+FUTURE PHASES (DO NOT RUSH):
+
+PHASE 2 – SPARK:
+The idea begins forming silently inside Ravhi.
+There is a BRIN startup accelerator in 1 year.
+This becomes a distant but real deadline.
+
+PHASE 3 – TEAM BUILDING:
+Ravhi searches for people one by one.
+Recruits through LinkedIn and connections.
+Team slowly forms into 6 core founders.
+
+PHASE 4 – PROTOTYPE:
+1 year build phase.
+House in Depok.
+Funding: personal + bank loans (100 million IDR).
+Engine: CENDRAWASIH-01.
+
+PHASE 5 – BRIN TWIST:
+Company: CAKRAWALA ANGKASA EXPLORASI (CakraX).
+Pitch → confusion → special session.
+
+PHASE 6 – SCALE:
+1 trillion funding.
+Engine: CENDRAWASIH-02.
+Team grows ~100.
+
+PHASE 7 – FAILURE ARC:
+3 major failures.
+Extreme pressure.
+Near collapse.
+
+PHASE 8 – SPACEPORT:
+Move to Biak.
+Build MCC, launchpad.
+Team ~300.
+Rocket: ANANTARA-1 Block 1 → Block 3.
+
+PHASE 9 – LAUNCH:
+2 failed launches.
+Final success.
+National broadcast.
+
+MISSION NAME:
+DIRGANTARA-1 → ADRIANA SATU (at Max Q).
+
+PHASE 10 – REVEAL:
+Adriana watches broadcast.
+Shock.
+Ravhi reveals later.
+
+PHASE 11 – FINAL:
+Adriana invited to Biak.
+Final emotional meeting.
+Ends with Adriana hugging Ravhi.
+
+FINAL EXECUTION RULE:
+Start immediately with a grounded scene.
+Do not explain anything.
+Do not summarize.
+Do not skip ahead.
+Do not add titles.
+
+Write the story naturally, like a novel, continuing scene by scene.

@@ -1,0 +1,6 @@
+node_modules
+backend/dist
+webui/dist
+.env
+backend/.env
+webui/.env
