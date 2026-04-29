@@ -1,7 +1,7 @@
 import { and, eq } from 'drizzle-orm';
 import type { Job } from 'bullmq';
 import { db } from '../../db/index.js';
-import { chapters, parts, projects, storyBibles } from '../../db/schema.js';
+import { chapters, memories, parts, projects, storyBibles } from '../../db/schema.js';
 import {
   extractCharactersFromChapter,
   extractMemoriesFromChapter,
@@ -132,6 +132,14 @@ async function applyChapterGeneration(
     .limit(1);
   if (!chapter) throw new Error('Chapter not found.');
 
+  // FIX 4: Clean up stale memories from previous generation before regenerating
+  if (mode === 'regenerate') {
+    await db
+      .delete(memories)
+      .where(and(eq(memories.chapterId, chapter.id), eq(memories.projectId, payload.projectId)));
+    console.log(`[worker] cleaned up stale memories for chapter ${chapter.sortOrder} before regeneration`);
+  }
+
   await db
     .update(chapters)
     .set({
@@ -157,11 +165,22 @@ async function applyChapterGeneration(
   const memoryExtraction = await extractMemoriesFromChapter(content);
   console.log(`[worker] chapter ${chapter.sortOrder} metadata extracted (${characterExtraction.characters.length} characters, ${memoryExtraction.memories.length} memories)`);
 
+  // Build an enriched summary that includes plot threads and continuity warnings
+  const enrichedSummary = [
+    summary.chapterSummary,
+    summary.plotThreads.length > 0 ? `Open threads: ${summary.plotThreads.join('; ')}` : '',
+    summary.continuityWarnings.length > 0
+      ? `CONTINUITY: ${summary.continuityWarnings.join('; ')}`
+      : '',
+  ]
+    .filter(Boolean)
+    .join(' | ');
+
   await db
     .update(chapters)
     .set({
       content,
-      summary: summary.chapterSummary,
+      summary: enrichedSummary,
       wordCount: countWords(content),
       charCount: countChars(content),
       generationPromptSnapshot: result.context,

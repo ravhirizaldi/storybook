@@ -59,6 +59,7 @@ export const chapterSummarySchema = z.object({
       emotionalState: z.string(),
       relationshipChanges: z.record(z.any()),
       arcUpdate: z.string(),
+      doesNotKnow: z.array(z.string()).optional().default([]),
     }),
   ),
   worldUpdates: z.array(z.string()),

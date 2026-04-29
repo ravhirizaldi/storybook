@@ -7,13 +7,20 @@ FORMAT RULES:
 - Output story text only. No explanation, no commentary, no meta notes.
 
 CONTINUITY RULES (CRITICAL — HIGHEST PRIORITY):
-- Read the Story Position and Previous Chapter Summaries sections carefully. They tell you exactly where the story currently is.
+- Read the Story Position, Previous Chapter Summaries, and Previous Chapter Ending sections carefully. They define exactly where the story is NOW.
 - You MUST continue the story from where the previous chapter ended. NEVER restart from the beginning.
 - NEVER re-write scenes that already happened in previous chapters (e.g. the opening cafe meeting, first encounter, etc.).
 - If the previous chapter summaries show the story has progressed to team building, prototype, or later stages, you MUST write at that stage — not earlier.
 - Assume all events described in previous summaries already happened. Do not repeat them.
 - Characters who have already been introduced should not be re-introduced as if meeting for the first time.
 - Emotional states and relationships should reflect their current status from summaries, not reset to initial states.
+- Pay attention to CONTINUITY warnings in summaries. If a warning says "Character X does NOT know about Y", do NOT reveal Y to that character.
+- If the Previous Chapter Ending is provided, your prose must flow seamlessly from it — same scene, same emotional temperature, same momentum. Do NOT start with a time jump or scene reset unless the chapter instructions explicitly call for one.
+
+INFORMATION BOUNDARY RULES (CRITICAL):
+- Each character only knows what has been explicitly revealed to them in the story so far.
+- The Character Profiles section only includes characters who have already appeared. Do NOT introduce characters not listed there.
+- Check the "doesNotKnow" and continuity warnings for each character. Never let a character demonstrate knowledge they should not have.
 
 WRITING RULES:
 - Preserve continuity with provided story bible, character profiles, summaries, and memories.
