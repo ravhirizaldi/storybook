@@ -210,15 +210,15 @@ export function StoryProjectPage() {
   return (
     <AppShell>
       {/* Compact header */}
-      <section className="mb-3 flex items-center justify-between gap-3 rounded-md border border-line bg-panel px-3 py-2">
+      <section className="mb-4 flex items-center justify-between gap-3">
         <div className="flex items-center gap-3 overflow-hidden">
-          <h1 className="truncate text-base font-semibold">{project.title}</h1>
+          <h1 className="truncate text-base font-semibold text-white/90">{project.title}</h1>
           <StatusPill status={project.status} />
           <Badge
             className={
               realtime.connected
-                ? 'border-emerald-400/30 text-emerald-300'
-                : 'border-amber-400/30 text-amber-300'
+                ? 'border-emerald-400/20 text-emerald-400/70'
+                : 'border-amber-400/20 text-amber-400/70'
             }
           >
             {realtime.connected ? 'Live' : 'Reconnecting...'}
@@ -259,12 +259,12 @@ export function StoryProjectPage() {
       {actionNotice.type !== 'idle' && (
         <section className="mb-3">
           <div
-            className={`rounded-md border px-3 py-2 text-xs ${
+            className={`rounded-md px-3 py-2 text-xs ${
               actionNotice.type === 'error'
-                ? 'border-rose-400/40 bg-rose-500/10 text-rose-100'
+                ? 'bg-rose-500/10 text-rose-300'
                 : actionNotice.type === 'success'
-                  ? 'border-emerald-400/30 bg-emerald-500/10 text-emerald-100'
-                  : 'border-blue-400/30 bg-blue-500/10 text-blue-100'
+                  ? 'bg-emerald-500/10 text-emerald-300'
+                  : 'bg-blue-500/10 text-blue-300'
             }`}
           >
             {actionNotice.message}
@@ -276,14 +276,14 @@ export function StoryProjectPage() {
       {project.status === 'outlining' && !hasChapters && (
         <div className="flex flex-col items-center justify-center py-20 text-center">
           <div className="mb-4 h-8 w-8 animate-spin rounded-full border-2 border-accent border-t-transparent" />
-          <p className="text-sm text-muted">Generating story outline...</p>
-          <p className="mt-1 text-xs text-muted/60">This may take 30-120 seconds depending on your AI provider</p>
+          <p className="text-sm text-white/40">Generating story outline...</p>
+          <p className="mt-1 text-xs text-white/20">This may take 30-120 seconds depending on your AI provider</p>
         </div>
       )}
 
       {/* Main content: editor centered + chapter tree on right */}
       {hasChapters && (
-        <div className={`flex gap-4 ${treeOpen ? '' : ''}`}>
+        <div className="flex gap-4">
           {/* Center: chapter editor */}
           <div className="min-w-0 flex-1">
             <ChapterEditor
@@ -314,11 +314,11 @@ export function StoryProjectPage() {
 
           {/* Right: collapsible chapter tree */}
           {treeOpen && (
-            <aside className="w-72 shrink-0">
-              <div className="sticky top-16 max-h-[calc(100dvh-80px)] overflow-y-auto rounded-md border border-line bg-panel p-2">
+            <aside className="w-64 shrink-0">
+              <div className="sticky top-5 max-h-[calc(100dvh-60px)] overflow-y-auto rounded-lg bg-white/[0.02] p-2">
                 <div className="mb-2 flex items-center justify-between px-2">
-                  <h3 className="text-xs font-semibold uppercase tracking-wide text-muted">Chapters</h3>
-                  <span className="text-[10px] text-muted">{chaptersQuery.data?.length ?? 0} total</span>
+                  <h3 className="text-[10px] font-medium uppercase tracking-widest text-white/25">Chapters</h3>
+                  <span className="text-[10px] text-white/20">{chaptersQuery.data?.length ?? 0}</span>
                 </div>
                 <ChapterTree
                   parts={partsQuery.data ?? []}
@@ -334,7 +334,7 @@ export function StoryProjectPage() {
 
       {/* No chapters yet and not outlining */}
       {!hasChapters && project.status !== 'outlining' && (
-        <div className="flex flex-col items-center justify-center py-20 text-center text-sm text-muted">
+        <div className="flex flex-col items-center justify-center py-20 text-center text-sm text-white/30">
           <p>No chapters yet. The outline may still be processing.</p>
         </div>
       )}
