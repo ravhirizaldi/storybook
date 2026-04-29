@@ -92,6 +92,14 @@ export function StoryProjectPage() {
     [chaptersQuery.data, selectedChapterId],
   );
 
+  const selectedChapterIndex = useMemo(
+    () => chaptersQuery.data?.findIndex((c) => c.id === selectedChapterId) ?? -1,
+    [chaptersQuery.data, selectedChapterId],
+  );
+  const hasPrevChapter = selectedChapterIndex > 0;
+  const hasNextChapter =
+    selectedChapterIndex >= 0 && selectedChapterIndex < (chaptersQuery.data?.length ?? 0) - 1;
+
   useEffect(() => {
     if (!selectedChapterId && chaptersQuery.data?.length) {
       setSelectedChapterId(chaptersQuery.data[0].id);
@@ -289,6 +297,18 @@ export function StoryProjectPage() {
               actionPending={actionMutation.isPending}
               isEditing={isEditing}
               onToggleEdit={() => setIsEditing((prev) => !prev)}
+              hasPrevChapter={hasPrevChapter}
+              hasNextChapter={hasNextChapter}
+              onPrevChapter={() => {
+                if (hasPrevChapter && chaptersQuery.data) {
+                  setSelectedChapterId(chaptersQuery.data[selectedChapterIndex - 1].id);
+                }
+              }}
+              onNextChapter={() => {
+                if (hasNextChapter && chaptersQuery.data) {
+                  setSelectedChapterId(chaptersQuery.data[selectedChapterIndex + 1].id);
+                }
+              }}
             />
           </div>
 

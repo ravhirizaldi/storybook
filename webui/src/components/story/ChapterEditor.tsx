@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { Loader2, RefreshCcw, Sparkles } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Loader2, RefreshCcw, Sparkles } from 'lucide-react';
 import type { Chapter } from '../../lib/api/types';
 import { Button } from '../ui/Button';
 
@@ -14,6 +14,10 @@ type Props = {
   actionPending?: boolean;
   isEditing?: boolean;
   onToggleEdit?: () => void;
+  onNextChapter?: () => void;
+  onPrevChapter?: () => void;
+  hasNextChapter?: boolean;
+  hasPrevChapter?: boolean;
 };
 
 const PAGE_HEIGHT = 900;
@@ -55,6 +59,10 @@ export function ChapterEditor({
   actionPending,
   isEditing,
   onToggleEdit,
+  onNextChapter,
+  onPrevChapter,
+  hasNextChapter,
+  hasPrevChapter,
 }: Props) {
   const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -143,6 +151,30 @@ export function ChapterEditor({
               <div className="mt-auto pt-6 text-center text-[11px] text-muted/40">
                 {pages.length > 1 && `${pageIdx + 1} / ${pages.length}`}
               </div>
+
+              {/* Chapter navigation on last page */}
+              {pageIdx === pages.length - 1 && (hasPrevChapter || hasNextChapter) && (
+                <div className="mt-4 flex items-center justify-between border-t border-line/30 pt-4">
+                  {hasPrevChapter ? (
+                    <button
+                      onClick={onPrevChapter}
+                      className="flex items-center gap-1 text-xs text-muted transition-colors hover:text-white"
+                    >
+                      <ChevronLeft size={14} />
+                      Previous Chapter
+                    </button>
+                  ) : <span />}
+                  {hasNextChapter ? (
+                    <button
+                      onClick={onNextChapter}
+                      className="flex items-center gap-1 text-xs text-muted transition-colors hover:text-white"
+                    >
+                      Next Chapter
+                      <ChevronRight size={14} />
+                    </button>
+                  ) : <span />}
+                </div>
+              )}
             </article>
           ))}
 
