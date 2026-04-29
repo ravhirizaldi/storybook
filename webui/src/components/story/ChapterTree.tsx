@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { ChevronDown, ChevronRight, FolderOpen, Folder, FileText } from 'lucide-react';
 import type { Chapter, Part } from '../../lib/api/types';
 import { StatusPill } from '../ui/StatusPill';
@@ -29,12 +29,19 @@ function ChapterItem({
   isSelected: boolean;
   onSelect: () => void;
 }) {
+  const ref = useRef<HTMLLIElement>(null);
   const [expanded, setExpanded] = useState(false);
   const arcs = chapter.arcsJson ?? [];
   const hasArcs = arcs.length > 0;
 
+  useEffect(() => {
+    if (isSelected && ref.current) {
+      ref.current.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+  }, [isSelected]);
+
   return (
-    <li>
+    <li ref={ref} data-chapter-id={chapter.id}>
       <button
         className={cn(
           'flex w-full items-center gap-1.5 rounded px-2 py-1.5 text-left text-xs transition-colors',
@@ -79,7 +86,14 @@ function PartFolder({
   onSelectChapter: (id: string) => void;
   defaultExpanded: boolean;
 }) {
-  const [expanded, setExpanded] = useState(defaultExpanded);
+  const hasSelected = chapters.some((c) => c.id === selectedChapterId);
+  const [expanded, setExpanded] = useState(defaultExpanded || hasSelected);
+
+  useEffect(() => {
+    if (hasSelected) {
+      setExpanded(true);
+    }
+  }, [hasSelected]);
 
   return (
     <div>
