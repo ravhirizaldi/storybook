@@ -342,7 +342,7 @@ export async function generateChapter(
     prompt: chapterGenerationPrompt(context),
     temperature: project.temperature,
     topP: settings.topP,
-    maxTokens: Math.max(settings.maxTokens, 16000),
+    maxTokens: settings.maxTokens,
   });
 
   return { text, context };
