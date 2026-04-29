@@ -90,10 +90,10 @@ function PartFolder({
   const [expanded, setExpanded] = useState(defaultExpanded || hasSelected);
 
   useEffect(() => {
-    if (hasSelected && !expanded) {
+    if (hasSelected) {
       setExpanded(true);
     }
-  }, [hasSelected, expanded]);
+  }, [hasSelected]);
 
   return (
     <div>
