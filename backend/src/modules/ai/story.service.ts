@@ -100,11 +100,13 @@ export async function generateChapter(
     .orderBy(asc(storyBibles.createdAt))
     .limit(1);
 
-  const allPrevSummaries = await db
+  // Fetch previous chapters (newest first for slicing, then reverse to chronological)
+  const allPrevChapters = await db
     .select({
       id: chapters.id,
       title: chapters.title,
       summary: chapters.summary,
+      content: chapters.content,
       sortOrder: chapters.sortOrder,
     })
     .from(chapters)
@@ -117,16 +119,32 @@ export async function generateChapter(
     .from(chapters)
     .where(eq(chapters.projectId, projectId));
 
-  const recentSummaries = allPrevSummaries.slice(0, 5);
-  const olderSummaries = allPrevSummaries.slice(5);
+  // FIX 1: Reverse to chronological order so AI reads them in story sequence
+  const recentSummaries = allPrevChapters.slice(0, 5).reverse();
+  const olderSummaries = allPrevChapters.slice(5).reverse();
 
-  const activeCharacters = await db
+  // FIX 3: Get the immediately previous chapter's ending for seamless continuity
+  const immediatelyPrev = allPrevChapters[0] ?? null;
+  const prevChapterEnding = immediatelyPrev?.content
+    ? extractEnding(immediatelyPrev.content, 1500)
+    : null;
+
+  // FIX 6: Only include characters who have appeared by this chapter's position
+  // Characters from the initial outline (no firstAppearedChapterId) are always included
+  const prevChapterIds = allPrevChapters.map((c) => c.id);
+  const allCharacters = await db
     .select()
     .from(characters)
     .where(eq(characters.projectId, projectId))
     .orderBy(asc(characters.name))
-    .limit(20);
+    .limit(30);
 
+  const activeCharacters = allCharacters.filter((c) => {
+    if (!c.firstAppearedChapterId) return true;
+    return prevChapterIds.includes(c.firstAppearedChapterId);
+  });
+
+  // FIX 7: Improved memory retrieval with recency boost and chapter_summary priority
   const retrievedMemories = await db
     .select()
     .from(memories)
@@ -146,17 +164,31 @@ export async function generateChapter(
   const relevantMemories = retrievedMemories
     .map((memory) => {
       const text = `${memory.title} ${memory.content}`.toLowerCase();
-      const hit = memoryNeedles
+      const needleTokens = memoryNeedles
         .split(/\s+/u)
-        .filter((token) => token.length > 2)
-        .some((token) => text.includes(token));
-      return {
-        ...memory,
-        score: Number(memory.importance) + (hit ? 2 : 0),
-      };
+        .filter((token) => token.length > 2);
+      const matchCount = needleTokens.filter((token) => text.includes(token)).length;
+
+      let score = Number(memory.importance);
+      // Keyword relevance boost (scaled by match count)
+      if (matchCount > 0) score += Math.min(matchCount, 5);
+      // Chapter summary memories are always high priority
+      if (memory.type === 'chapter_summary') score += 3;
+      // Recency boost: memories from recent chapters matter more
+      if (memory.chapterId && prevChapterIds.slice(0, 5).includes(memory.chapterId)) score += 2;
+
+      return { ...memory, score };
     })
     .sort((a, b) => b.score - a.score)
-    .slice(0, 20);
+    .slice(0, 25);
+
+  // FIX 2: Only send relevant chapter fields, not content/prompt snapshot
+  const chapterInstruction = {
+    title: chapter.title,
+    summary: chapter.summary,
+    sortOrder: chapter.sortOrder,
+    arcsJson: chapter.arcsJson,
+  };
 
   const buckets: ContextBucket[] = [
     {
@@ -193,7 +225,11 @@ export async function generateChapter(
       label: 'Current Part',
       mandatory: true,
       weight: 85,
-      text: stringifyForContext(part ?? {}),
+      text: stringifyForContext({
+        title: part?.title ?? '',
+        description: part?.description ?? '',
+        sortOrder: part?.sortOrder ?? 0,
+      }),
     },
     {
       label: 'Story Position',
@@ -206,8 +242,8 @@ export async function generateChapter(
             ? 'This is near the end of the story. Begin wrapping up toward the master prompt ending.'
             : ''
       } ${
-        allPrevSummaries.length > 0
-          ? `The previous chapter was "${allPrevSummaries[0].title}". Continue from where it ended. Do NOT restart the story.`
+        immediatelyPrev
+          ? `The previous chapter was "${immediatelyPrev.title}" (chapter ${immediatelyPrev.sortOrder}). Continue from where it ended. Do NOT restart the story.`
           : 'This is the first chapter.'
       }`,
     },
@@ -215,31 +251,64 @@ export async function generateChapter(
       label: 'Current Chapter Instruction',
       mandatory: true,
       weight: 110,
-      text: stringifyForContext(chapter),
+      text: stringifyForContext(chapterInstruction),
     },
     {
-      label: 'Character Profiles',
+      label: 'Character Profiles (only characters who have appeared so far)',
       mandatory: true,
       weight: 90,
-      text: stringifyForContext(activeCharacters),
+      text: stringifyForContext(
+        activeCharacters.map((c) => ({
+          name: c.name,
+          role: c.role,
+          description: c.description,
+          traits: c.traitsJson,
+          goals: c.goalsJson,
+          relationships: c.relationshipsJson,
+          emotionalState: c.emotionalState,
+          currentArc: c.currentArc,
+          knownFacts: c.knownFactsJson,
+        })),
+      ),
     },
     {
-      label: 'Recent Chapter Summaries (MANDATORY — DO NOT IGNORE)',
+      label: 'Recent Chapter Summaries (MANDATORY — chronological order, DO NOT IGNORE)',
       mandatory: true,
       weight: 105,
       text:
         recentSummaries.length > 0
           ? stringifyForContext(
-              recentSummaries.map((item) => ({ title: item.title, summary: item.summary })),
+              recentSummaries.map((item) => ({
+                chapter: item.sortOrder,
+                title: item.title,
+                summary: item.summary,
+              })),
             )
           : 'No previous chapters yet. This is the beginning of the story.',
     },
+  ];
+
+  // FIX 3: Previous chapter ending for seamless prose continuity
+  if (prevChapterEnding) {
+    buckets.push({
+      label: 'Previous Chapter Ending (continue seamlessly from this prose)',
+      mandatory: true,
+      weight: 108,
+      text: prevChapterEnding,
+    });
+  }
+
+  buckets.push(
     {
-      label: 'Older Chapter Summaries',
+      label: 'Older Chapter Summaries (chronological)',
       mandatory: false,
       weight: 60,
       text: stringifyForContext(
-        olderSummaries.map((item) => ({ title: item.title, summary: item.summary })),
+        olderSummaries.map((item) => ({
+          chapter: item.sortOrder,
+          title: item.title,
+          summary: item.summary,
+        })),
       ),
     },
     {
@@ -255,7 +324,7 @@ export async function generateChapter(
         })),
       ),
     },
-  ];
+  );
 
   const context = withContextBudget(buckets, settings.contextMaxChars);
   const text = await generateText({
@@ -267,6 +336,19 @@ export async function generateChapter(
   });
 
   return { text, context };
+}
+
+function extractEnding(content: string, maxChars: number): string {
+  const paragraphs = content.split('\n').filter((p) => p.trim());
+  if (paragraphs.length === 0) return '';
+  const result: string[] = [];
+  let used = 0;
+  for (let i = paragraphs.length - 1; i >= 0; i--) {
+    if (used + paragraphs[i].length > maxChars && result.length > 0) break;
+    result.unshift(paragraphs[i]);
+    used += paragraphs[i].length;
+  }
+  return result.join('\n\n');
 }
 
 export async function summarizeChapterForMemory(
