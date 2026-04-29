@@ -1,5 +1,7 @@
 import { z } from 'zod';
 import type { FastifyPluginAsync } from 'fastify';
+import { generateText } from '../ai/client.js';
+import { refinePromptSystemPrompt } from '../../prompts/refinePromptPrompt.js';
 import { createAndQueueJob, queueNextPendingChapter } from '../jobs/service.js';
 import { publishProjectRefresh } from '../realtime/pubsub.js';
 import {
@@ -115,6 +117,23 @@ export const projectsRoutes: FastifyPluginAsync = async (fastify) => {
       }
       const queued = await queueNextPendingChapter(projectId);
       return { queued, count: chapterIds.length };
+    },
+  );
+
+  fastify.post(
+    '/projects/refine-prompt',
+    { preHandler: [fastify.verifyAuth] },
+    async (request) => {
+      const body = z.object({ rawPrompt: z.string().min(10), outputLanguage: z.string().optional() }).parse(request.body);
+      const languageHint = body.outputLanguage
+        ? `\nIMPORTANT: Write the refined prompt in ${body.outputLanguage}. Match the language and cultural context.`
+        : '';
+      const refined = await generateText({
+        system: refinePromptSystemPrompt + languageHint,
+        prompt: body.rawPrompt,
+        temperature: 0.7,
+      });
+      return { refinedPrompt: refined };
     },
   );
 };

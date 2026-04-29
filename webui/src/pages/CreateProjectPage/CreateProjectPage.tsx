@@ -21,6 +21,14 @@ export function CreateProjectPage() {
   const [temperature, setTemperature] = useState(0.85);
   const [pacing, setPacing] = useState('Balanced');
 
+  const refineMutation = useMutation({
+    mutationFn: () =>
+      apiClient.refinePrompt({ rawPrompt: masterPrompt, outputLanguage }),
+    onSuccess: (data) => {
+      setMasterPrompt(data.refinedPrompt);
+    },
+  });
+
   const createMutation = useMutation({
     mutationFn: () =>
       apiClient.createProject({
@@ -44,13 +52,42 @@ export function CreateProjectPage() {
         <h1 className="text-2xl font-semibold">Create Story Project</h1>
         <Card className="space-y-4">
           <div className="space-y-2">
-            <label className="text-sm font-medium">Master Prompt</label>
+            <div className="flex items-center justify-between">
+              <label className="text-sm font-medium">Master Prompt</label>
+              <button
+                type="button"
+                onClick={() => refineMutation.mutate()}
+                disabled={refineMutation.isPending || masterPrompt.trim().length < 10}
+                className="inline-flex items-center gap-1.5 rounded-md border border-border/50 bg-surface px-3 py-1 text-xs font-medium text-muted transition-colors hover:bg-surface/80 hover:text-foreground disabled:opacity-40 disabled:cursor-not-allowed"
+              >
+                {refineMutation.isPending ? (
+                  <>
+                    <svg className="h-3 w-3 animate-spin" viewBox="0 0 24 24" fill="none">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                    </svg>
+                    Refining...
+                  </>
+                ) : (
+                  <>
+                    <svg className="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M12 3v1m0 16v1m8.66-13.66l-.71.71M4.05 19.95l-.71.71M21 12h-1M4 12H3m16.66 7.66l-.71-.71M4.05 4.05l-.71-.71" />
+                    </svg>
+                    Refine Prompt
+                  </>
+                )}
+              </button>
+            </div>
             <Textarea
               value={masterPrompt}
               onChange={(event) => setMasterPrompt(event.target.value)}
               className="min-h-[200px]"
-              placeholder="Describe story concept, key themes, protagonist conflict, and style expectations."
+              placeholder="Write your raw story idea here — characters, plot, world, tone, anything. Click 'Refine Prompt' to transform it into a structured master prompt."
             />
+            {refineMutation.isError && (
+              <p className="text-xs text-red-400">{(refineMutation.error as Error).message}</p>
+            )}
+            <p className="text-[10px] text-muted/60">Write your raw idea, then click Refine Prompt to expand it into a detailed, structured master prompt.</p>
           </div>
 
           <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
