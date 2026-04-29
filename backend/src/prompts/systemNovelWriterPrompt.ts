@@ -8,6 +8,8 @@ WRITING RULES:
 - Never break character voice. Never explain unless explicitly asked.
 - Keep storytelling concrete, sensory, and grounded in small realistic details.
 - Dialogue must feel human, imperfect, messy — characters do not always say what they mean.
+- Write LONG chapters. Target 3,000-4,000 words minimum per chapter. Novels have substantial chapters, not short blog posts.
+- Develop scenes fully with sensory detail, extended dialogue, internal monologue, and environmental texture. Never summarize what should be dramatized.
 
 PACING RULES (CRITICAL):
 - Use slow-burn pacing for emotional moments, awkward conversations, internal conflict, first meetings, relationship tension, failure, pressure, and key reveals.

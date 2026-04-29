@@ -2,6 +2,14 @@ export function chapterGenerationPrompt(context: string): string {
   return `
 Generate only one chapter as plain novel prose.
 
+LENGTH REQUIREMENTS (CRITICAL):
+- Each chapter MUST be at least 2,500 words. Target 3,000-4,000 words.
+- A chapter under 2,000 words is UNACCEPTABLE for a novel. Write deeply, not briefly.
+- Develop each arc fully: build the scene, layer sensory details, write extended dialogue exchanges, explore internal monologue, and let moments breathe.
+- Do not summarize events — dramatize them with full scenes. Show, don't tell.
+- When writing dialogue, include surrounding action beats, body language, pauses, and environmental details between lines.
+- Each arc in the chapter should receive substantial development (at least 500-800 words per arc).
+
 FORMAT RULES:
 - No JSON output. No markdown. No bullet points. No emojis. No headings unless explicitly required.
 - Output story text only. No explanation, no commentary, no meta notes.

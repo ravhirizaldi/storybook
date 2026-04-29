@@ -12,7 +12,7 @@ const EnvSchema = z.object({
   AI_EMBEDDING_MODEL: z.string().default('text-embedding-3-small'),
   AI_TEMPERATURE: z.coerce.number().min(0).max(2).default(0.85),
   AI_TOP_P: z.coerce.number().min(0).max(1).default(0.95),
-  AI_MAX_TOKENS: z.coerce.number().min(128).default(4000),
+  AI_MAX_TOKENS: z.coerce.number().min(128).default(16000),
   AI_CONTEXT_MAX_CHARS: z.coerce.number().min(2000).default(24000),
   EMBEDDING_DIMENSION: z.coerce.number().min(64).default(1536),
 });
