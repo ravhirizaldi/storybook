@@ -1,5 +1,4 @@
 import type { ReactNode } from 'react';
-import { Navbar } from './Navbar';
 import { Sidebar } from './Sidebar';
 
 type Props = {
@@ -8,12 +7,9 @@ type Props = {
 
 export function AppShell({ children }: Props) {
   return (
-    <div className="min-h-screen bg-surface">
-      <Navbar />
-      <div className="mx-auto flex w-full max-w-[1600px]">
-        <Sidebar />
-        <main className="flex-1 p-5">{children}</main>
-      </div>
+    <div className="flex h-dvh bg-[#0d0f13]">
+      <Sidebar />
+      <main className="flex-1 overflow-y-auto p-5">{children}</main>
     </div>
   );
 }
