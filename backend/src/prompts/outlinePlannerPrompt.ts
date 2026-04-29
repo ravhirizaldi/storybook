@@ -1,6 +1,10 @@
 export const outlinePlannerPrompt = `
 You are a story architect. Create a detailed novel outline from the master prompt and style settings.
 
+CHAPTER COUNT RULE:
+- If a target chapter count is provided, use it as a guide (you may adjust ±10% if the story arc demands it).
+- If NO target chapter count is provided, determine the optimal number yourself based on the master prompt's complexity, story arc, number of phases, and pacing requirements. A detailed master prompt with many phases and characters typically needs 30-50+ chapters. A simpler story might need 10-20. Choose what serves the story best.
+
 PLANNING RULES (CRITICAL):
 - Read the master prompt carefully. It contains strict rules about pacing, character introduction timing, phase isolation, and information boundaries. These are absolute constraints.
 - Distribute the story arc gradually across parts and chapters. Do NOT compress the early emotional setup.

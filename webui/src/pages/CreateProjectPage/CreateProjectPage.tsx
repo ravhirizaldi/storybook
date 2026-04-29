@@ -17,7 +17,7 @@ export function CreateProjectPage() {
   const [outputLanguage, setOutputLanguage] = useState('English');
   const [tone, setTone] = useState('Emotionally grounded');
   const [genre, setGenre] = useState('Speculative fiction');
-  const [targetChapterCount, setTargetChapterCount] = useState(20);
+  const [targetChapterCount, setTargetChapterCount] = useState<number | ''>('');
   const [temperature, setTemperature] = useState(0.85);
   const [pacing, setPacing] = useState('Balanced');
 
@@ -28,7 +28,7 @@ export function CreateProjectPage() {
         outputLanguage,
         tone,
         genre,
-        targetChapterCount,
+        ...(targetChapterCount ? { targetChapterCount } : {}),
         temperature,
         pacing,
       }),
@@ -101,11 +101,16 @@ export function CreateProjectPage() {
               <label className="text-xs text-muted">Target Chapters</label>
               <Input
                 type="number"
-                min={1}
+                min={0}
                 max={120}
                 value={targetChapterCount}
-                onChange={(e) => setTargetChapterCount(Number(e.target.value))}
+                onChange={(e) => {
+                  const v = e.target.value;
+                  setTargetChapterCount(v === '' ? '' : Number(v));
+                }}
+                placeholder="Auto (AI decides)"
               />
+              <p className="text-[10px] text-muted/60">Leave empty to let AI decide</p>
             </div>
             <div className="space-y-1">
               <label className="text-xs text-muted">Creativity</label>
