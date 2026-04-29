@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect } from 'react';
 import { ChevronLeft, ChevronRight, Loader2, RefreshCcw, Sparkles } from 'lucide-react';
 import type { Chapter } from '../../lib/api/types';
 import { Button } from '../ui/Button';
@@ -36,10 +36,8 @@ export function ChapterEditor({
   hasNextChapter,
   hasPrevChapter,
 }: Props) {
-  const scrollRef = useRef<HTMLDivElement>(null);
-
   useEffect(() => {
-    scrollRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
+    document.querySelector('main')?.scrollTo({ top: 0, behavior: 'smooth' });
   }, [chapter?.id]);
 
   if (!chapter) {
@@ -88,7 +86,7 @@ export function ChapterEditor({
       </div>
 
       {/* Scrollable content area */}
-      <div ref={scrollRef} className="overflow-y-auto">
+      <div className="overflow-y-auto">
         {/* Chapter title */}
         <h1 className="mb-10 text-center text-2xl font-semibold leading-tight tracking-tight text-white/85">
           {chapter.title}
