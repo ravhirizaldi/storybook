@@ -22,11 +22,14 @@ import { countChars, countWords } from '../../utils/text.js';
 import type { QueueJobPayload } from '../queues.js';
 
 async function applyOutline(payload: QueueJobPayload) {
-  const targetChapterCount = Number(payload.input.targetChapterCount ?? 0);
+  const rawCount = payload.input.targetChapterCount;
+  const targetChapterCount = rawCount ? Number(rawCount) : undefined;
   console.log(`[worker] generating outline for project ${payload.projectId}...`);
   const outline = await generateOutline(
     payload.projectId,
-    Number.isFinite(targetChapterCount) ? targetChapterCount : undefined,
+    targetChapterCount && Number.isFinite(targetChapterCount) && targetChapterCount > 0
+      ? targetChapterCount
+      : undefined,
   );
   const totalChapters = outline.parts.reduce((sum, p) => sum + p.chapters.length, 0);
   console.log(`[worker] outline ready: "${outline.title}" — ${outline.parts.length} parts, ${totalChapters} chapters, ${outline.characters.length} characters`);
