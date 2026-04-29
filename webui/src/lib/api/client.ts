@@ -74,6 +74,12 @@ export const apiClient = {
       method: 'DELETE',
     }),
 
+  refinePrompt: (payload: { rawPrompt: string; outputLanguage?: string }) =>
+    request<{ refinedPrompt: string }>('/projects/refine-prompt', {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    }),
+
   generateOutline: (projectId: string) =>
     request<{ jobId: string }>(`/projects/${projectId}/generate-outline`, { method: 'POST' }),
   generateAllChapters: (projectId: string) =>
