@@ -99,14 +99,26 @@ export function StoryProjectPage() {
   }, [chaptersQuery.data, selectedChapterId]);
 
   const prevChapterIdRef = useRef<string | null>(null);
+  const lastSyncedContentRef = useRef<string>('');
   useEffect(() => {
-    if (selectedChapterId && selectedChapterId !== prevChapterIdRef.current) {
-      const chapter = chaptersQuery.data?.find((c) => c.id === selectedChapterId);
-      if (chapter) setEditorValue(chapter.content);
+    const chapter = chaptersQuery.data?.find((c) => c.id === selectedChapterId);
+    if (!selectedChapterId || !chapter) return;
+
+    const isNewChapter = selectedChapterId !== prevChapterIdRef.current;
+    const serverContentChanged = chapter.content !== lastSyncedContentRef.current;
+
+    if (isNewChapter) {
+      setEditorValue(chapter.content);
       setIsEditing(false);
       prevChapterIdRef.current = selectedChapterId;
+      lastSyncedContentRef.current = chapter.content;
+    } else if (serverContentChanged && !isEditing) {
+      setEditorValue(chapter.content);
+      lastSyncedContentRef.current = chapter.content;
+    } else if (serverContentChanged) {
+      lastSyncedContentRef.current = chapter.content;
     }
-  }, [selectedChapterId, chaptersQuery.data]);
+  }, [selectedChapterId, chaptersQuery.data, isEditing]);
 
   const saveMutation = useMutation({
     mutationFn: async () => {
