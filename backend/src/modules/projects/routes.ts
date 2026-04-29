@@ -21,7 +21,7 @@ const createProjectSchema = z.object({
   outputLanguage: z.string().default('English'),
   tone: z.string().default('Balanced'),
   genre: z.string().default('Fiction'),
-  targetChapterCount: z.number().int().min(1).max(120).default(20),
+  targetChapterCount: z.number().int().min(1).max(120).optional(),
   temperature: z.number().min(0).max(2).default(0.85),
   pacing: z.string().default('Medium'),
 });
@@ -51,7 +51,7 @@ export const projectsRoutes: FastifyPluginAsync = async (fastify) => {
     const job = await createAndQueueJob({
       projectId: project.id,
       type: 'generate_outline',
-      input: { targetChapterCount: body.targetChapterCount },
+      input: body.targetChapterCount ? { targetChapterCount: body.targetChapterCount } : {},
     });
 
     return reply.code(201).send({ project, jobId: job.id });

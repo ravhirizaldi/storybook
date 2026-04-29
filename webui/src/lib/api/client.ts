@@ -54,7 +54,7 @@ export const apiClient = {
     outputLanguage: string;
     tone: string;
     genre: string;
-    targetChapterCount: number;
+    targetChapterCount?: number;
     temperature: number;
     pacing: string;
   }) =>

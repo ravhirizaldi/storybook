@@ -64,7 +64,9 @@ export async function generateOutline(
     `Tone: ${project.tone}`,
     `Genre: ${project.genre}`,
     `Pacing: ${project.pacing}`,
-    targetChapterCount ? `Target chapter count: ${targetChapterCount}` : '',
+    targetChapterCount
+      ? `Target chapter count: ${targetChapterCount}`
+      : 'No target chapter count specified. Determine the optimal number of chapters based on the master prompt complexity and story arc.',
   ]
     .filter(Boolean)
     .join('\n');
@@ -131,7 +133,15 @@ export async function generateChapter(
 
   // FIX 6: Only include characters who have appeared by this chapter's position
   // Characters from the initial outline (no firstAppearedChapterId) are always included
-  const prevChapterIds = allPrevChapters.map((c) => c.id);
+  // Use a separate lightweight query for ALL previous chapter IDs (not limited to 16)
+  const allPrevChapterIds = await db
+    .select({ id: chapters.id })
+    .from(chapters)
+    .where(and(eq(chapters.projectId, projectId), lt(chapters.sortOrder, chapter.sortOrder)));
+  const prevChapterIdSet = new Set(allPrevChapterIds.map((c) => c.id));
+  // Keep the limited set for recency scoring in memory retrieval
+  const recentPrevChapterIds = allPrevChapters.slice(0, 5).map((c) => c.id);
+
   const allCharacters = await db
     .select()
     .from(characters)
@@ -141,7 +151,7 @@ export async function generateChapter(
 
   const activeCharacters = allCharacters.filter((c) => {
     if (!c.firstAppearedChapterId) return true;
-    return prevChapterIds.includes(c.firstAppearedChapterId);
+    return prevChapterIdSet.has(c.firstAppearedChapterId);
   });
 
   // FIX 7: Improved memory retrieval with recency boost and chapter_summary priority
@@ -175,7 +185,7 @@ export async function generateChapter(
       // Chapter summary memories are always high priority
       if (memory.type === 'chapter_summary') score += 3;
       // Recency boost: memories from recent chapters matter more
-      if (memory.chapterId && prevChapterIds.slice(0, 5).includes(memory.chapterId)) score += 2;
+      if (memory.chapterId && recentPrevChapterIds.includes(memory.chapterId)) score += 2;
 
       return { ...memory, score };
     })

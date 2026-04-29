@@ -19,7 +19,7 @@ export type CreateProjectInput = {
   outputLanguage: string;
   tone: string;
   genre: string;
-  targetChapterCount: number;
+  targetChapterCount?: number;
   temperature: number;
   pacing: string;
 };
@@ -52,7 +52,7 @@ export async function createProject(input: CreateProjectInput) {
     projectId: project.id,
     contentJson: {
       pending: true,
-      targetChapterCount: input.targetChapterCount,
+      ...(input.targetChapterCount ? { targetChapterCount: input.targetChapterCount } : {}),
     },
     summary: 'Outline generation queued.',
   });
