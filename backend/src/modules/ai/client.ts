@@ -20,11 +20,13 @@ type ChatCreateArgs = {
   response_format?: { type: 'json_object' };
 };
 
+const CLIENT_TIMEOUT_MS = 300_000;
+
 function makeClient(settings: { apiKey: string; baseUrl: string }) {
   return new OpenAI({
     apiKey: settings.apiKey,
     baseURL: settings.baseUrl,
-    timeout: 120_000,
+    timeout: CLIENT_TIMEOUT_MS,
   });
 }
 
@@ -39,6 +41,21 @@ function needsMaxCompletionTokens(error: unknown): boolean {
 
 function errorMessage(error: unknown): string {
   return error instanceof Error ? error.message : String(error);
+}
+
+function isNetworkOrTimeoutError(error: unknown): boolean {
+  const msg = errorMessage(error);
+  return (
+    msg.includes('timeout') ||
+    msg.includes('ETIMEDOUT') ||
+    msg.includes('ECONNREFUSED') ||
+    msg.includes('ENOTFOUND') ||
+    msg.includes('socket hang up') ||
+    msg.includes('network') ||
+    msg.includes('Connection error') ||
+    (error instanceof Error && error.constructor.name === 'APIConnectionError') ||
+    (error instanceof Error && error.constructor.name === 'APITimeoutError')
+  );
 }
 
 async function createChatCompletionWithCompat(
@@ -142,7 +159,9 @@ export async function generateJson<T>(input: ChatInput): Promise<T> {
 
     const text = getText(response.choices[0]?.message?.content);
     return parseJsonFromModel<T>(text);
-  } catch {
+  } catch (error) {
+    if (isNetworkOrTimeoutError(error)) throw error;
+    console.warn('[ai] generateJson failed, retrying without response_format:', errorMessage(error));
     const fallback = await generateText(input);
     return parseJsonFromModel<T>(fallback);
   }
