@@ -33,6 +33,8 @@ export function DashboardPage() {
     baseUrl: '',
     model: '',
     embeddingModel: '',
+    embeddingApiKey: '',
+    embeddingBaseUrl: '',
     temperature: '0.85',
     topP: '0.95',
     maxTokens: '4000',
@@ -46,6 +48,8 @@ export function DashboardPage() {
       baseUrl: aiSettingsQuery.data.baseUrl,
       model: aiSettingsQuery.data.model,
       embeddingModel: aiSettingsQuery.data.embeddingModel,
+      embeddingApiKey: aiSettingsQuery.data.embeddingApiKey,
+      embeddingBaseUrl: aiSettingsQuery.data.embeddingBaseUrl,
       temperature: String(aiSettingsQuery.data.temperature),
       topP: String(aiSettingsQuery.data.topP),
       maxTokens: String(aiSettingsQuery.data.maxTokens),
@@ -60,6 +64,8 @@ export function DashboardPage() {
         baseUrl: form.baseUrl,
         model: form.model,
         embeddingModel: form.embeddingModel,
+        embeddingApiKey: form.embeddingApiKey,
+        embeddingBaseUrl: form.embeddingBaseUrl,
         temperature: Number(form.temperature),
         topP: Number(form.topP),
         maxTokens: Number(form.maxTokens),
@@ -165,7 +171,7 @@ export function DashboardPage() {
       </Modal>
 
       {isAdmin && (
-        <Card className="mt-6 space-y-3">
+        <Card className="mt-6 space-y-4">
           <h2 className="text-lg font-semibold">Admin AI Runtime Settings</h2>
           <p className="text-sm text-muted">
             Changes apply live to backend and worker next AI call.
@@ -174,81 +180,121 @@ export function DashboardPage() {
           {aiSettingsQuery.isError && (
             <ErrorState message={(aiSettingsQuery.error as Error).message} />
           )}
-          <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">
-            <div className="space-y-1">
-              <label className="text-xs text-muted">API Key</label>
-              <Input
-                type="password"
-                value={form.apiKey}
-                onChange={(e) => setForm((prev) => ({ ...prev, apiKey: e.target.value }))}
-              />
+
+          <div className="space-y-4">
+            <div className="rounded-lg border border-white/10 p-4 space-y-3">
+              <h3 className="text-sm font-semibold text-accent">LLM (Story Generation)</h3>
+              <p className="text-xs text-muted">Used for outline planning, chapter writing, and prompt refinement.</p>
+              <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">
+                <div className="space-y-1">
+                  <label className="text-xs text-muted">API Key</label>
+                  <Input
+                    type="password"
+                    value={form.apiKey}
+                    onChange={(e) => setForm((prev) => ({ ...prev, apiKey: e.target.value }))}
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-xs text-muted">Base URL</label>
+                  <Input
+                    value={form.baseUrl}
+                    placeholder="https://api.openai.com/v1"
+                    onChange={(e) => setForm((prev) => ({ ...prev, baseUrl: e.target.value }))}
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-xs text-muted">Model</label>
+                  <Input
+                    value={form.model}
+                    placeholder="gpt-4.1-mini"
+                    onChange={(e) => setForm((prev) => ({ ...prev, model: e.target.value }))}
+                  />
+                </div>
+              </div>
             </div>
-            <div className="space-y-1">
-              <label className="text-xs text-muted">Base URL</label>
-              <Input
-                value={form.baseUrl}
-                onChange={(e) => setForm((prev) => ({ ...prev, baseUrl: e.target.value }))}
-              />
+
+            <div className="rounded-lg border border-white/10 p-4 space-y-3">
+              <h3 className="text-sm font-semibold text-accent">Embedding Model</h3>
+              <p className="text-xs text-muted">Used for vector embeddings and memory retrieval. Leave API Key and Base URL empty to use the same as LLM.</p>
+              <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">
+                <div className="space-y-1">
+                  <label className="text-xs text-muted">API Key (leave empty to use LLM key)</label>
+                  <Input
+                    type="password"
+                    value={form.embeddingApiKey}
+                    onChange={(e) => setForm((prev) => ({ ...prev, embeddingApiKey: e.target.value }))}
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-xs text-muted">Base URL (leave empty to use LLM URL)</label>
+                  <Input
+                    value={form.embeddingBaseUrl}
+                    placeholder="https://api.openai.com/v1"
+                    onChange={(e) => setForm((prev) => ({ ...prev, embeddingBaseUrl: e.target.value }))}
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-xs text-muted">Model</label>
+                  <Input
+                    value={form.embeddingModel}
+                    placeholder="text-embedding-3-small"
+                    onChange={(e) =>
+                      setForm((prev) => ({ ...prev, embeddingModel: e.target.value }))
+                    }
+                  />
+                </div>
+              </div>
             </div>
-            <div className="space-y-1">
-              <label className="text-xs text-muted">Model</label>
-              <Input
-                value={form.model}
-                onChange={(e) => setForm((prev) => ({ ...prev, model: e.target.value }))}
-              />
-            </div>
-            <div className="space-y-1">
-              <label className="text-xs text-muted">Embedding Model</label>
-              <Input
-                value={form.embeddingModel}
-                onChange={(e) =>
-                  setForm((prev) => ({ ...prev, embeddingModel: e.target.value }))
-                }
-              />
-            </div>
-            <div className="space-y-1">
-              <label className="text-xs text-muted">Temperature</label>
-              <Input
-                type="number"
-                min={0}
-                max={2}
-                step={0.01}
-                value={form.temperature}
-                onChange={(e) => setForm((prev) => ({ ...prev, temperature: e.target.value }))}
-              />
-            </div>
-            <div className="space-y-1">
-              <label className="text-xs text-muted">Top P</label>
-              <Input
-                type="number"
-                min={0}
-                max={1}
-                step={0.01}
-                value={form.topP}
-                onChange={(e) => setForm((prev) => ({ ...prev, topP: e.target.value }))}
-              />
-            </div>
-            <div className="space-y-1">
-              <label className="text-xs text-muted">Max Tokens</label>
-              <Input
-                type="number"
-                min={128}
-                value={form.maxTokens}
-                onChange={(e) => setForm((prev) => ({ ...prev, maxTokens: e.target.value }))}
-              />
-            </div>
-            <div className="space-y-1">
-              <label className="text-xs text-muted">Context Max Chars</label>
-              <Input
-                type="number"
-                min={2000}
-                value={form.contextMaxChars}
-                onChange={(e) =>
-                  setForm((prev) => ({ ...prev, contextMaxChars: e.target.value }))
-                }
-              />
+
+            <div className="rounded-lg border border-white/10 p-4 space-y-3">
+              <h3 className="text-sm font-semibold text-accent">Generation Parameters</h3>
+              <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">
+                <div className="space-y-1">
+                  <label className="text-xs text-muted">Temperature</label>
+                  <Input
+                    type="number"
+                    min={0}
+                    max={2}
+                    step={0.01}
+                    value={form.temperature}
+                    onChange={(e) => setForm((prev) => ({ ...prev, temperature: e.target.value }))}
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-xs text-muted">Top P</label>
+                  <Input
+                    type="number"
+                    min={0}
+                    max={1}
+                    step={0.01}
+                    value={form.topP}
+                    onChange={(e) => setForm((prev) => ({ ...prev, topP: e.target.value }))}
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-xs text-muted">Max Tokens</label>
+                  <Input
+                    type="number"
+                    min={128}
+                    value={form.maxTokens}
+                    onChange={(e) => setForm((prev) => ({ ...prev, maxTokens: e.target.value }))}
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-xs text-muted">Context Max Chars</label>
+                  <Input
+                    type="number"
+                    min={2000}
+                    value={form.contextMaxChars}
+                    onChange={(e) =>
+                      setForm((prev) => ({ ...prev, contextMaxChars: e.target.value }))
+                    }
+                  />
+                </div>
+              </div>
             </div>
           </div>
+
           {updateSettingsMutation.isError && (
             <ErrorState message={(updateSettingsMutation.error as Error).message} />
           )}

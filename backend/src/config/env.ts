@@ -10,6 +10,8 @@ const EnvSchema = z.object({
   AI_BASE_URL: z.string().url().default('https://api.openai.com/v1'),
   AI_MODEL: z.string().default('gpt-4.1-mini'),
   AI_EMBEDDING_MODEL: z.string().default('text-embedding-3-small'),
+  AI_EMBEDDING_API_KEY: z.string().default(''),
+  AI_EMBEDDING_BASE_URL: z.union([z.string().url(), z.literal('')]).default(''),
   AI_TEMPERATURE: z.coerce.number().min(0).max(2).default(0.85),
   AI_TOP_P: z.coerce.number().min(0).max(1).default(0.95),
   AI_MAX_TOKENS: z.coerce.number().min(128).default(16000),

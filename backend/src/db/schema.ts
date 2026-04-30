@@ -220,6 +220,8 @@ export const aiRuntimeSettings = pgTable('ai_runtime_settings', {
   baseUrl: text('base_url').notNull().default('https://api.openai.com/v1'),
   model: text('model').notNull().default('gpt-4.1-mini'),
   embeddingModel: text('embedding_model').notNull().default('text-embedding-3-small'),
+  embeddingApiKey: text('embedding_api_key').notNull().default(''),
+  embeddingBaseUrl: text('embedding_base_url').notNull().default(''),
   temperature: doublePrecision('temperature').notNull().default(0.85),
   topP: doublePrecision('top_p').notNull().default(0.95),
   maxTokens: integer('max_tokens').notNull().default(4000),

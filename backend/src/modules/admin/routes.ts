@@ -12,6 +12,8 @@ const patchSchema = z.object({
   baseUrl: z.string().url().optional(),
   model: z.string().min(1).optional(),
   embeddingModel: z.string().min(1).optional(),
+  embeddingApiKey: z.string().optional(),
+  embeddingBaseUrl: z.union([z.string().url(), z.literal('')]).optional(),
   temperature: z.number().min(0).max(2).optional(),
   topP: z.number().min(0).max(1).optional(),
   maxTokens: z.number().int().min(128).max(64000).optional(),
