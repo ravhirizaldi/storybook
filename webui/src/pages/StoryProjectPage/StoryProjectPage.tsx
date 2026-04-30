@@ -80,7 +80,7 @@ export function StoryProjectPage() {
     refetchInterval: fallbackRefetchInterval,
   });
 
-  useQuery({
+  const jobsQuery = useQuery({
     queryKey: ['jobs', projectId],
     queryFn: () => apiClient.listJobs(projectId),
     enabled: Boolean(projectId),
@@ -180,6 +180,21 @@ export function StoryProjectPage() {
       setActionNotice({ type: 'error', message: (error as Error).message });
     },
   });
+
+  const retryOutlineMutation = useMutation({
+    mutationFn: () => apiClient.generateOutline(projectId),
+    onSuccess: async () => {
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ['project', projectId] }),
+        queryClient.invalidateQueries({ queryKey: ['jobs', projectId] }),
+      ]);
+    },
+  });
+
+  const latestFailedJob = useMemo(() => {
+    if (!jobsQuery.data) return null;
+    return jobsQuery.data.find((j) => j.status === 'failed' && j.type === 'generate_outline') ?? null;
+  }, [jobsQuery.data]);
 
   if (projectQuery.isLoading || partsQuery.isLoading || chaptersQuery.isLoading) {
     return (
@@ -332,8 +347,30 @@ export function StoryProjectPage() {
         </div>
       )}
 
-      {/* No chapters yet and not outlining */}
-      {!hasChapters && project.status !== 'outlining' && (
+      {/* Failed state: show error and retry */}
+      {project.status === 'failed' && !hasChapters && (
+        <div className="flex flex-col items-center justify-center py-20 text-center">
+          <div className="mb-4 rounded-lg border border-rose-500/20 bg-rose-500/5 px-6 py-4 max-w-lg">
+            <p className="text-sm font-medium text-rose-300 mb-2">Outline generation failed</p>
+            {latestFailedJob?.error && (
+              <p className="text-xs text-rose-300/70 break-words font-mono">{latestFailedJob.error}</p>
+            )}
+            {!latestFailedJob?.error && (
+              <p className="text-xs text-rose-300/70">An unknown error occurred. Check your API endpoint settings.</p>
+            )}
+          </div>
+          <Button
+            className="mt-4"
+            onClick={() => retryOutlineMutation.mutate()}
+            disabled={retryOutlineMutation.isPending}
+          >
+            {retryOutlineMutation.isPending ? 'Retrying...' : 'Retry Outline Generation'}
+          </Button>
+        </div>
+      )}
+
+      {/* No chapters yet, not outlining, not failed */}
+      {!hasChapters && project.status !== 'outlining' && project.status !== 'failed' && (
         <div className="flex flex-col items-center justify-center py-20 text-center text-sm text-white/30">
           <p>No chapters yet. The outline may still be processing.</p>
         </div>
