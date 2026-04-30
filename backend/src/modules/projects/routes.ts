@@ -95,6 +95,7 @@ export const projectsRoutes: FastifyPluginAsync = async (fastify) => {
     async (request, reply) => {
       const { projectId } = paramsProject.parse(request.params);
       await getOwnedProject(projectId, request.userAuth!.userId);
+      await updateProject(projectId, request.userAuth!.userId, { status: 'outlining' });
       const job = await createAndQueueJob({
         projectId,
         type: 'generate_outline',
