@@ -151,9 +151,13 @@ export async function generateJson<T>(input: ChatInput): Promise<T> {
 export async function embedTexts(values: string[]): Promise<number[][]> {
   if (values.length === 0) return [];
   const settings = await getOrCreateAiRuntimeSettings();
-  const client = makeClient(settings);
 
-  const response = await client.embeddings.create({
+  const embeddingClient = makeClient({
+    apiKey: settings.embeddingApiKey || settings.apiKey,
+    baseUrl: settings.embeddingBaseUrl || settings.baseUrl,
+  });
+
+  const response = await embeddingClient.embeddings.create({
     model: settings.embeddingModel,
     input: values,
   });

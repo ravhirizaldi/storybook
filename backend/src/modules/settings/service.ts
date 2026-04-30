@@ -12,6 +12,8 @@ export type AiRuntimeSettings = {
   baseUrl: string;
   model: string;
   embeddingModel: string;
+  embeddingApiKey: string;
+  embeddingBaseUrl: string;
   temperature: number;
   topP: number;
   maxTokens: number;
@@ -27,6 +29,8 @@ function defaultsFromEnv() {
     baseUrl: env.AI_BASE_URL,
     model: env.AI_MODEL,
     embeddingModel: env.AI_EMBEDDING_MODEL,
+    embeddingApiKey: env.AI_EMBEDDING_API_KEY,
+    embeddingBaseUrl: env.AI_EMBEDDING_BASE_URL,
     temperature: env.AI_TEMPERATURE,
     topP: env.AI_TOP_P,
     maxTokens: env.AI_MAX_TOKENS,
@@ -53,6 +57,8 @@ export async function updateAiRuntimeSettings(
     baseUrl: string;
     model: string;
     embeddingModel: string;
+    embeddingApiKey: string;
+    embeddingBaseUrl: string;
     temperature: number;
     topP: number;
     maxTokens: number;

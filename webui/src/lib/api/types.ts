@@ -11,6 +11,8 @@ export type AiRuntimeSettings = {
   baseUrl: string;
   model: string;
   embeddingModel: string;
+  embeddingApiKey: string;
+  embeddingBaseUrl: string;
   temperature: number;
   topP: number;
   maxTokens: number;
